@@ -130,6 +130,23 @@ describe('init catalog snapshot', () => {
     expect(count(statements, CONSTRAINT_PROBE)).toBe(0);
   }, 60000);
 
+  it('rejects incomplete Knowledge columns from a fresh init snapshot without repairing them', async () => {
+    const schema = uniqueSchema('snapshot_knowledge_drift');
+    await admin(`CREATE SCHEMA "${schema}"`);
+    const cold = await newStore(schema);
+    await cold.init();
+    await cold.close();
+    await admin(`ALTER TABLE "${schema}"."mastra_knowledge_nodes" DROP COLUMN "metadata"`);
+
+    const warm = await newStore(schema);
+    const statements = await captureStatements(async () => {
+      await expect(warm.init()).rejects.toThrow(/mastra_knowledge_nodes is incomplete: metadata/);
+    });
+    expect(count(statements, INFORMATION_SCHEMA_COLUMN_PROBE)).toBe(0);
+    expect(count(statements, NO_OP_ALTER)).toBe(0);
+    expect(await columnsIn(schema, 'mastra_knowledge_nodes')).not.toContain('metadata');
+  }, 60000);
+
   it('skips the schemata existence probe on a warm init in a fresh process', async () => {
     const schema = uniqueSchema('snapshot_fresh');
     await admin(`CREATE SCHEMA "${schema}"`);
