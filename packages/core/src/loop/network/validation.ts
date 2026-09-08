@@ -252,39 +252,44 @@ export async function runCompletionScorers(
   const results: ScorerResult[] = [];
   let timedOut = false;
 
+  let timeoutId: ReturnType<typeof setTimeout> | undefined;
   const timeoutPromise = new Promise<'timeout'>(resolve => {
-    setTimeout(() => resolve('timeout'), timeout);
+    timeoutId = setTimeout(() => resolve('timeout'), timeout);
   });
 
-  if (parallel) {
-    const scorerPromises = scorers.map(scorer => runSingleScorer(scorer, context));
-    const raceResult = await Promise.race([Promise.all(scorerPromises), timeoutPromise]);
+  try {
+    if (parallel) {
+      const scorerPromises = scorers.map(scorer => runSingleScorer(scorer, context));
+      const raceResult = await Promise.race([Promise.all(scorerPromises), timeoutPromise]);
 
-    if (raceResult === 'timeout') {
-      timedOut = true;
-      const settledResults = await Promise.allSettled(scorerPromises);
-      for (const settled of settledResults) {
-        if (settled.status === 'fulfilled') {
-          results.push(settled.value);
+      if (raceResult === 'timeout') {
+        timedOut = true;
+        const settledResults = await Promise.allSettled(scorerPromises);
+        for (const settled of settledResults) {
+          if (settled.status === 'fulfilled') {
+            results.push(settled.value);
+          }
         }
+      } else {
+        results.push(...raceResult);
       }
     } else {
-      results.push(...raceResult);
-    }
-  } else {
-    for (const scorer of scorers) {
-      if (Date.now() - startTime > timeout) {
-        timedOut = true;
-        break;
+      for (const scorer of scorers) {
+        if (Date.now() - startTime > timeout) {
+          timedOut = true;
+          break;
+        }
+
+        const result = await runSingleScorer(scorer, context);
+        results.push(result);
+
+        // Short-circuit
+        if (strategy === 'all' && !result.passed) break;
+        if (strategy === 'any' && result.passed) break;
       }
-
-      const result = await runSingleScorer(scorer, context);
-      results.push(result);
-
-      // Short-circuit
-      if (strategy === 'all' && !result.passed) break;
-      if (strategy === 'any' && result.passed) break;
     }
+  } finally {
+    clearTimeout(timeoutId);
   }
 
   const complete =
