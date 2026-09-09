@@ -625,6 +625,7 @@ export abstract class KnowledgeStorage extends StorageDomain {
   }
   async setRecordScopes(_input: {
     id: string;
+    version: number;
     scopeIds: KnowledgeScopeIds;
     importRunId?: string;
     contextScopeId?: string;
