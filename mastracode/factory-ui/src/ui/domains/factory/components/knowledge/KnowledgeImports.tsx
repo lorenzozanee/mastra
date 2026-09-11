@@ -136,7 +136,7 @@ function ImportRunDetail({
                       {new Date(message.createdAt).toLocaleString()}
                     </time>
                   </div>
-                  <pre className="text-icon4 overflow-x-auto whitespace-pre-wrap text-xs">
+                  <pre className="text-icon4 overflow-x-auto text-xs whitespace-pre-wrap">
                     {transcriptContent(message.content)}
                   </pre>
                 </li>
