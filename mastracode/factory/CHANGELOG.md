@@ -1,5 +1,12 @@
 # @mastra/factory
 
+## 0.14.1-alpha.2
+
+### Patch Changes
+
+- Updated dependencies:
+  - @mastra/code-sdk@1.7.2-alpha.2
+
 ## 0.14.1-alpha.1
 
 ### Patch Changes
