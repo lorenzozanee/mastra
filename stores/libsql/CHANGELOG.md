@@ -1,5 +1,14 @@
 # @mastra/libsql
 
+## 1.23.1-alpha.0
+
+### Patch Changes
+
+- Fixed unique-index update errors in the Factory storage adapters. Updates now throw `UniqueViolationError`, the same error inserts already threw, so callers can handle a duplicate claim consistently. ([#23929](https://github.com/mastra-ai/mastra/pull/23929))
+
+- Updated dependencies [[`81ccd7b`](https://github.com/mastra-ai/mastra/commit/81ccd7b93040952fe9c7168a2757c43a217f0a87), [`a46385d`](https://github.com/mastra-ai/mastra/commit/a46385dc1b773d1e1453627b1d62e7b6ebe93cf1)]:
+  - @mastra/core@1.68.0-alpha.1
+
 ## 1.23.0
 
 ### Minor Changes

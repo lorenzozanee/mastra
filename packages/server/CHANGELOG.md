@@ -1,5 +1,32 @@
 # @mastra/server
 
+## 1.68.0-alpha.1
+
+### Minor Changes
+
+- Added an authenticated thread-query endpoint with capability checks and structured query errors. ([#23920](https://github.com/mastra-ai/mastra/pull/23920))
+
+  ```http
+  POST /observability/threads/query
+  Content-Type: application/json
+
+  {
+    "traces": {
+      "timeRange": {
+        "from": "2026-08-01T00:00:00Z",
+        "to": "2026-09-01T00:00:00Z"
+      }
+    }
+  }
+  ```
+
+  The endpoint accepts eligible trace and cross-trace predicates and returns thread identities with cursor pagination.
+
+### Patch Changes
+
+- Updated dependencies [[`81ccd7b`](https://github.com/mastra-ai/mastra/commit/81ccd7b93040952fe9c7168a2757c43a217f0a87), [`a46385d`](https://github.com/mastra-ai/mastra/commit/a46385dc1b773d1e1453627b1d62e7b6ebe93cf1)]:
+  - @mastra/core@1.68.0-alpha.1
+
 ## 1.68.0-alpha.0
 
 ### Patch Changes

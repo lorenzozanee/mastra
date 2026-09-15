@@ -1,5 +1,16 @@
 # @mastra/editor
 
+## 0.15.1-alpha.0
+
+### Patch Changes
+
+- Fix `editor.agent.clearCache()` leaving version-specific stored agents registered with Mastra. Agents hydrated via `versionId`, `versionNumber`, or a status override skip the value cache but were still registered in the runtime registry, so a no-ID clear-all never evicted them. The Editor agent namespace now tracks the stored-agent IDs it registers and evicts any remaining ones during clear-all, while code-defined agents remain registered. ([#24000](https://github.com/mastra-ai/mastra/pull/24000))
+
+- Derive inline workspace identity from a canonical, key-order-independent hash so semantically equivalent configs resolve to the same `inline-<hash>` ID. Previously the ID was hashed from raw `JSON.stringify`, which preserves object insertion order, so reordered-key configs produced different IDs and created duplicate stored workspaces with unstable references. Array order and value differences remain significant. ([#24009](https://github.com/mastra-ai/mastra/pull/24009))
+
+- Updated dependencies [[`81ccd7b`](https://github.com/mastra-ai/mastra/commit/81ccd7b93040952fe9c7168a2757c43a217f0a87), [`a46385d`](https://github.com/mastra-ai/mastra/commit/a46385dc1b773d1e1453627b1d62e7b6ebe93cf1)]:
+  - @mastra/core@1.68.0-alpha.1
+
 ## 0.15.0
 
 ### Minor Changes

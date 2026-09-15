@@ -1,5 +1,43 @@
 # @mastra/factory
 
+## 0.16.0-alpha.1
+
+### Minor Changes
+
+- Added Linear team intake sources so Factory boards can ingest active projectless issues while preserving project precedence for overlapping selections. ([#23929](https://github.com/mastra-ai/mastra/pull/23929))
+
+  Select a whole Linear team under Settings, Intake, or send the team source id directly. Team source ids come from `GET /web/linear/teams`; the Platform-backed integration issues opaque ids, the self-managed integration uses `linear-team:<teamId>`.
+
+  ```ts
+  await fetch('/web/intake/config', {
+    method: 'PUT',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({
+      linear: { enabled: true, sourceIds: ['linear-team:team-1', 'project-1'] },
+    }),
+  });
+  ```
+
+  A team source syncs active issues in the triage, backlog, unstarted, and started states, including issues without a project. When a project and its team are both selected, the project selection takes precedence for that project's issues.
+
+  Rerouting a Linear issue no longer creates a duplicate card. The Factory that already has the card keeps it, and the card's details stay available there. A new card appears on the newly routed Factory only after the existing card is finished.
+
+### Patch Changes
+
+- Fixed Factory plan handoffs when Auto-approve plans is off. ([#24001](https://github.com/mastra-ai/mastra/pull/24001))
+
+  Plan agents now leave work items in Planning until a maintainer approves the plan. Factory does not queue a build before that approval.
+
+  Preapproved plans and projects with Auto-approve plans enabled continue to advance automatically. Arming an autonomous run does not approve a plan.
+
+  Fixes #23742.
+
+- Fixed the Factory keeping a review or work run executing after an external terminal transition revoked its binding. Terminal-stage cleanup now aborts the live run on each retired seat (leaving alone the seat that drove its own transition and any successor that took the session over), a resumed session whose binding was revoked on a settled item now surfaces a clear retirement error instead of silently dropping its transition tool, and a settled card no longer retries its close-out to the attempt limit as a false blocked state. ([#24005](https://github.com/mastra-ai/mastra/pull/24005))
+
+- Updated dependencies [[`81ccd7b`](https://github.com/mastra-ai/mastra/commit/81ccd7b93040952fe9c7168a2757c43a217f0a87), [`a46385d`](https://github.com/mastra-ai/mastra/commit/a46385dc1b773d1e1453627b1d62e7b6ebe93cf1)]:
+  - @mastra/core@1.68.0-alpha.1
+  - @mastra/code-sdk@1.7.3-alpha.1
+
 ## 0.15.1-alpha.0
 
 ### Patch Changes

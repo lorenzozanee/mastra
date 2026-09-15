@@ -1,5 +1,17 @@
 # mastracode
 
+## 0.40.1-alpha.1
+
+### Patch Changes
+
+- Fixed the Factory plan-approval card so plans submitted with an absolute artifact path now load correctly. The card normalizes absolute paths against the workspace artifacts root, rejects paths that escape it, and keeps the Approve button disabled until the plan body is actually visible — preventing approval of a plan you can't see. ([#24002](https://github.com/mastra-ai/mastra/pull/24002))
+
+- Updated dependencies [[`81ccd7b`](https://github.com/mastra-ai/mastra/commit/81ccd7b93040952fe9c7168a2757c43a217f0a87), [`a46385d`](https://github.com/mastra-ai/mastra/commit/a46385dc1b773d1e1453627b1d62e7b6ebe93cf1), [`bb3ee38`](https://github.com/mastra-ai/mastra/commit/bb3ee38e71141570f1e7b0382a6a3cde3036ac36)]:
+  - @mastra/core@1.68.0-alpha.1
+  - @mastra/libsql@1.23.1-alpha.0
+  - @mastra/pg@1.25.1-alpha.0
+  - @mastra/code-sdk@1.7.3-alpha.1
+
 ## 0.40.1-alpha.0
 
 ### Patch Changes

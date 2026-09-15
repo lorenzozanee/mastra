@@ -1,5 +1,27 @@
 # @mastra/core
 
+## 1.68.0-alpha.1
+
+### Minor Changes
+
+- Make the workspace grep text-extension whitelist extensible. Added `.sas`, `.log`, and `.jsonl` to the built-in text extensions and MIME type map so they are searchable by default. Added an optional `textExtensions` option to `MastraFilesystemOptions` (exposed via `filesystem.isTextFile()`) so consumers can register additional text extensions. When an explicit file path is grepped but its extension isn't recognized as text, the grep summary now reports it as skipped so "no matches" is distinguishable from "never searched". ([#24003](https://github.com/mastra-ai/mastra/pull/24003))
+
+  ```ts
+  import { LocalFilesystem } from '@mastra/core/workspace';
+
+  // Register extra extensions as searchable text files
+  const filesystem = new LocalFilesystem({
+    basePath: process.cwd(),
+    textExtensions: ['.sasx', '.myext'],
+  });
+
+  filesystem.isTextFile('report.sasx'); // true
+  ```
+
+### Patch Changes
+
+- Fix `agent.generate()` / `.stream()` reporting a caller `abortSignal` cancellation as a processor tripwire. When a run is aborted and no processor triggered a tripwire, the result now reports `finishReason: 'aborted'` and leaves `tripwire` undefined, instead of synthesizing a generic `{ reason: 'Processor tripwire triggered' }`. Genuine processor tripwires are unaffected. ([#24008](https://github.com/mastra-ai/mastra/pull/24008))
+
 ## 1.68.0-alpha.0
 
 ### Minor Changes

@@ -1,5 +1,26 @@
 # @mastra/client-js
 
+## 1.47.0-alpha.1
+
+### Minor Changes
+
+- Added typed `queryTraceThreads()` methods for querying thread identities across eligible traces. ([#23920](https://github.com/mastra-ai/mastra/pull/23920))
+
+  ```ts
+  const result = await mastraClient.queryTraceThreads({
+    traces: {
+      timeRange: { from: '2026-08-01T00:00:00Z', to: '2026-09-01T00:00:00Z' },
+    },
+  });
+  ```
+
+  `queryTraces()` remains trace-only, while `queryTraceThreads()` returns observability-derived thread identities.
+
+### Patch Changes
+
+- Updated dependencies [[`81ccd7b`](https://github.com/mastra-ai/mastra/commit/81ccd7b93040952fe9c7168a2757c43a217f0a87), [`a46385d`](https://github.com/mastra-ai/mastra/commit/a46385dc1b773d1e1453627b1d62e7b6ebe93cf1)]:
+  - @mastra/core@1.68.0-alpha.1
+
 ## 1.46.1-alpha.0
 
 ### Patch Changes
