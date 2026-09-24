@@ -1010,6 +1010,26 @@ describe('prepareJsonSchemaForOpenAIStrictMode', () => {
     expect(props.union.anyOf).toHaveLength(2);
   });
 
+  it('merges properties with names inherited from Object.prototype', () => {
+    const schema = JSON.parse(
+      `{"allOf":[{"type":"object","properties":{"constructor":{"type":"string"},"toString":{"type":"string"},"hasOwnProperty":{"type":"string"},"__proto__":{"type":"string"}}},{"type":"object","properties":{"age":{"type":"number"}}}]}`,
+    ) as JSONSchema7;
+
+    const out = prepareJsonSchemaForOpenAIStrictMode(schema);
+    const props = out.properties as Record<string, JSONSchema7>;
+
+    expect(Object.keys(props).sort()).toEqual(['__proto__', 'age', 'constructor', 'hasOwnProperty', 'toString']);
+    for (const name of ['constructor', 'toString', 'hasOwnProperty', '__proto__']) {
+      expect(Object.hasOwn(props, name)).toBe(true);
+      expect(props[name]).toEqual({ type: 'string' });
+    }
+    expect(props.age).toEqual({ type: 'number' });
+    expect(out.required).toEqual(
+      expect.arrayContaining(['constructor', 'toString', 'hasOwnProperty', '__proto__', 'age']),
+    );
+    expect(out.additionalProperties).toBe(false);
+  });
+
   it('accepts identical duplicate properties across allOf branches', () => {
     const schema = {
       allOf: [
