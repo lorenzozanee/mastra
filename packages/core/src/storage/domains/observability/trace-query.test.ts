@@ -45,6 +45,7 @@ import {
   traceQueryTraceResponseSchema,
   TraceQueryCursorError,
   TraceQueryExecutionError,
+  TraceQueryUnsupportedError,
   TraceQueryResourceLimitError,
   TraceQueryValidationError,
   type TraceQueryPredicate,
@@ -1821,6 +1822,10 @@ describe('trace-query execution timeout contract', () => {
     expect(new TraceQueryResourceLimitError()).toMatchObject({
       code: 'TRACE_QUERY_RESOURCE_LIMIT',
       message: 'The trace query exceeded its resource limit',
+    });
+    expect(new TraceQueryUnsupportedError('Unsupported query')).toMatchObject({
+      code: 'TRACE_QUERY_UNSUPPORTED',
+      message: 'Unsupported query',
     });
   });
 });

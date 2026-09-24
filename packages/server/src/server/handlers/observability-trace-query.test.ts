@@ -13,6 +13,7 @@ import {
   getTraceQueryFieldsArgsSchema,
   getTraceQueryValuesArgsSchema,
   TraceQueryExecutionError,
+  TraceQueryUnsupportedError,
   TraceQueryResourceLimitError,
   parseTraceQueryRequest,
   planTraceQuery,
@@ -625,6 +626,19 @@ describe('QUERY_TRACES', () => {
     expect(getDeclaredErrorSchema(504).parse(await error.getResponse().json())).toEqual({
       code: 'TRACE_QUERY_EXECUTION_TIMEOUT',
       message: 'The trace query exceeded its execution timeout',
+    });
+  });
+
+  it('maps unsupported adapter query plans to a structured 501', async () => {
+    const { mastra, observabilityStore } = createHarness();
+    observabilityStore.queryTraces.mockRejectedValue(new TraceQueryUnsupportedError('LibSQL does not support groups'));
+
+    const error = await captureHttpException(QUERY_TRACES.handler(params(mastra, { timeRange: TIME_RANGE })));
+
+    expect(error.status).toBe(501);
+    expect(getDeclaredErrorSchema(501).parse(await error.getResponse().json())).toEqual({
+      code: 'TRACE_QUERY_UNSUPPORTED',
+      message: 'LibSQL does not support groups',
     });
   });
 

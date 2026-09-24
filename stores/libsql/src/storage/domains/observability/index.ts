@@ -30,12 +30,16 @@ import type {
   PruneResult,
   RetentionTablesDescriptor,
   TableRetentionPolicy,
+  TraceQueryResponse,
+  TrustedTraceQueryPlan,
 } from '@mastra/core/storage';
 import { parseSqlIdentifier } from '@mastra/core/utils';
 import { LibSQLDB, resolveClient } from '../../db';
 import type { LibSQLDomainConfig } from '../../db';
+import type { SqliteClient } from '../../db/client';
 import { transformFromSqlRow } from '../../db/utils';
 import { runPrune, resolveTargets } from '../../retention';
+import * as traceQueryOps from './trace-query';
 
 export class ObservabilityLibSQL extends ObservabilityStorage {
   /**
@@ -47,11 +51,17 @@ export class ObservabilityLibSQL extends ObservabilityStorage {
   };
 
   #db: LibSQLDB;
+  #client: SqliteClient;
 
   constructor(config: LibSQLDomainConfig) {
     super();
     const client = resolveClient(config);
+    this.#client = client;
     this.#db = new LibSQLDB({ client, maxRetries: config.maxRetries, initialBackoffMs: config.initialBackoffMs });
+  }
+
+  override getFeatures() {
+    return ['trace-query', 'trace-query-root-duration', 'trace-query-tenant-scope'] as const;
   }
 
   async init(): Promise<void> {
@@ -554,6 +564,10 @@ export class ObservabilityLibSQL extends ObservabilityStorage {
         error,
       );
     }
+  }
+
+  override async queryTraces(plan: TrustedTraceQueryPlan): Promise<TraceQueryResponse> {
+    return traceQueryOps.queryTraces(this.#client, plan);
   }
 
   async batchCreateSpans(args: BatchCreateSpansArgs): Promise<void> {

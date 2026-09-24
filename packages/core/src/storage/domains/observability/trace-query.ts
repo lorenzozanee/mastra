@@ -802,6 +802,15 @@ export class TraceQueryExecutionError extends Error {
   }
 }
 
+export class TraceQueryUnsupportedError extends Error {
+  readonly code = 'TRACE_QUERY_UNSUPPORTED';
+
+  constructor(message: string) {
+    super(message);
+    this.name = 'TraceQueryUnsupportedError';
+  }
+}
+
 export class TraceQueryResourceLimitError extends Error {
   readonly code = 'TRACE_QUERY_RESOURCE_LIMIT';
 

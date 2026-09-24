@@ -362,6 +362,9 @@ export const QUERY_TRACES = createNewRoute(NEW_ROUTE_DEFS.QUERY_TRACES, {
       if (error instanceof coreStorage.TraceQueryExecutionError) {
         throwTraceQueryError(504, { code: error.code, message: error.message });
       }
+      if (error instanceof coreStorage.TraceQueryUnsupportedError) {
+        throwTraceQueryError(501, { code: error.code, message: error.message });
+      }
       throw error;
     }
   },
