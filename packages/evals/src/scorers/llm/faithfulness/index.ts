@@ -71,14 +71,14 @@ export function createFaithfulnessScorer({
       },
     })
     .generateScore(({ results }) => {
-      const totalClaims = results.analyzeStepResult.verdicts.length;
-      const supportedClaims = results.analyzeStepResult.verdicts.filter(v => v.verdict === 'yes').length;
+      const totalClaims = results.preprocessStepResult?.claims?.length ?? 0;
+      const supportedClaims = results.analyzeStepResult.verdicts.filter(v => v.verdict.toLowerCase().trim() === 'yes').length;
 
       if (totalClaims === 0) {
         return 0;
       }
 
-      const score = (supportedClaims / totalClaims) * (options?.scale || 1);
+      const score = Math.min(1, supportedClaims / totalClaims) * (options?.scale || 1);
 
       return roundToTwoDecimals(score);
     })
